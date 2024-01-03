@@ -8,7 +8,7 @@ This React application provides a user-friendly interface for exploring the late
 
 ## How to Run
 
-Access web app [here](gustavo-ribeiro-santiago.github.io/hacker-news) or clone this repository to run it on your local machine.
+Access web app [here](https://gustavo-ribeiro-santiago.github.io/hacker-news-stories/) or clone this repository to run it on your local machine.
 
 ## Dependencies
 - React: A JavaScript library for building user interfaces.
@@ -31,7 +31,7 @@ Component for displaying nested subcomments
 ### Pagination.jsx
 Component for rendering pagination controls.
 
-### useDataApi.jsx
+### useDataApi.js
 Custom hook for managing API calls and state.
 
 ## Development Tips
