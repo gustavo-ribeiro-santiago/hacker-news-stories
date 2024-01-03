@@ -1,0 +1,94 @@
+body {
+  margin-top: 0px;
+}
+
+.app {
+  padding-left: 5%;
+  padding-right: 5%;
+  margin-top: 0px;
+  background-color:rgba(40, 120, 191, 0.238);
+}
+
+#form-search::placeholder {
+  color: rgb(239, 239, 239);
+}
+
+.clickable-chat-icon {
+  animation: 900ms ease-in-out 500ms 4 MoveUpDown;
+  background-color: transparent;
+}
+.clickable-chat-icon:hover {
+  background-color: rgba(0, 0, 0, 0.078);
+}
+
+.comments {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 700ms ease-in-out, opacity 300ms 200ms ease-in;
+}
+
+.comments.visible {
+  max-height: 6000px;
+  opacity: 1;
+}
+
+@keyframes MoveUpDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20%);
+  }
+}
+
+header {
+  background-color: white;
+  width: auto;
+  margin: 12px;
+}
+
+.title {
+  margin: 6px;
+  text-align: center;
+}
+
+.search {
+  margin: 16px 0px;
+}
+
+.news-title {
+  background: #ffd14988;
+  padding: 2px;
+}
+
+div .custom-styles {
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.news-subtitle {
+  font-size: small;
+  overflow: hidden;
+}
+
+.posted,
+.url {
+  font-style: italic;
+  font-weight: bold;
+}
+
+.page-legend {
+  margin: 12px 12px 0px;
+}
+
+footer {
+  padding-top: 8px;
+  padding-left: auto;
+}
+
+@media (min-width: 768px) {
+  header {
+    width: 75%;
+  }
+}
