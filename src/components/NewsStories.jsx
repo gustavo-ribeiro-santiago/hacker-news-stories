@@ -2,6 +2,7 @@ import Comments from './Comments.jsx';
 import { useState, useEffect } from 'react';
 
 const NewsStories = ({ pageData }) => {
+  console.log(pageData)
   // Displays news stories from current page
   const [newsWithVisibleComments, setNewsWithVisibleComments] = useState([]);
 

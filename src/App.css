@@ -53,8 +53,129 @@ header {
   text-align: center;
 }
 
-.search {
-  margin: 16px 0px;
+.menu-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.menu-controls button {
+  min-width: 48px;
+  color: white;
+  background-color: #0D6EFD;
+  border: none;
+  padding: 6px;
+  border-radius: 15%;
+  box-shadow: 2px 2px #8888883c;
+}
+
+.menu-controls button:hover {
+  transform: scale(1.03);
+}
+
+.menu-controls div {
+  color: white;
+  background-color: #0D6EFD;
+  border: none;
+  padding: 4px;
+  border-radius: 10px;
+}
+
+div .search {
+  margin: 2px 2px;
+  width: 80%;
+  flex-grow: 100;
+}
+
+div .search:hover, div .search:focus {
+  transform: scale(1.003);
+}
+
+.search-container {
+  flex-grow: 100;
+  vertical-align: middle;
+}
+
+.arrow-up-filterby {
+  background-color: transparent;
+  margin: 4px 0px 0px 11px;
+  padding: 0;
+  width: 0;
+  height: 0;
+  border-radius: 0px;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 15px solid #0D6EFD;
+}
+
+.arrow-up-sortby {
+  background-color: transparent;
+  margin: 4px 0px 0px 64px;
+  padding: 0;
+  width: 0;
+  height: 0;
+  border-radius: 0px;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 15px solid #0D6EFD;
+}
+
+.filters-container {
+  background-color: #0D6EFD;
+  color: white;
+  padding: 4px 8px 8px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.filter-by-date-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 0px;
+}
+
+div .filters-container .MuiFormControl-root {
+  width: 190px;
+  margin: 8px;
+}
+
+div .filters-container .MuiFormLabel-root,
+div .filters-container .MuiInputBase-root,
+div .filters-container button svg {
+  color: white;
+}
+
+div .filters-container fieldset {
+  border-color: white;
+}
+
+.filters-container .apply-button {
+  border-radius: 50rem;
+  height: 48px;
+  margin-left: 8px;
+  padding: 4px 16px;
+}
+
+.filters-container hr {
+  margin: 8px 0px 12px;
+}
+
+div div .filters-container .active-filter-tag {
+  color: black;
+}
+
+div .filter-tags {
+  padding: 4px;
+  margin: 4px;
+}
+
+.sortby-container {
+  background-color: #0D6EFD;
+  color: white;
+  padding: 0px 10% 0px 10%;
+  width: 100%;
+  height: 80px;
+  border-radius: 12px;
 }
 
 .news-title {
@@ -91,4 +212,25 @@ footer {
   header {
     width: 75%;
   }
+
+  .arrow-up-filterby {
+    margin: 4px 0px 0px 30px;
+  }
+
+  .filters-container {
+    border-radius: 8px;
+  }
+
+  div .filters-container .MuiFormControl-root {
+    width: 220px;
+  }
+
+  .arrow-up-sortby {
+    margin: 4px 0px 0px 120px;
+  }
+
+  .sortby-container {
+    padding: 20px;
+  }
+
 }
