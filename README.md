@@ -1,38 +1,55 @@
 # Hacker News React App
-This React application provides a user-friendly interface for exploring the latest Hacker News stories. Users can search for specific topics and navigate through paginated results. The app also includes a feature to display comments and subcomments associated with each story.
+This React application provides a user-friendly interface for exploring the Hacker News stories. Users can filter by date and by tags, sort by different criteria, search for keywords and navigate through paginated results. The app also allows the users to view nested comments associated with each story.
+
+![Project Screenshot](hacker%20news%20stories%20printshot.png)
 
 ## Features
 - Search Functionality: Use the search bar to find stories related to specific keywords.
+- Sorting: Users can sort the news stories based on either date or relevance.
+- Filtering: The application supports filtering by date range and tags.
+- Comments: Expand and collapse nested comments associated with each story.
 - Pagination: Navigate through different pages of search results.
-- Comments: Expand and collapse comments and subcomments associated with each story.
+- Responsive Design: The interface is designed to be responsive, adapting to different screen sizes.
 
 ## How to Run
 
 Access web app [here](https://gustavo-ribeiro-santiago.github.io/hacker-news-stories/) or clone this repository to run it on your local machine.
 
-## Dependencies
-- React: A JavaScript library for building user interfaces.
-- React Bootstrap: Bootstrap components as React components.
-- Axios: Promise-based HTTP client for the browser and Node.js.
+## Technologies Used
+- React
+- React Bootstrap
+- Material-UI (for date pickers)
+- Axios (for API requests)
+- Day.js (for handling dates)
 
 ## Components
 ### App.js
-Main component containing the application logic.
+
+The main component that orchestrates the overall structure of the application. It handles state, API requests, and renders child components.
+
+### FilterBySection.jsx
+
+Manages the filter options, including date range and tags. Uses Material-UI date pickers for date selection.
+
+### SortBySection.jsx
+
+Handles the sorting options, allowing users to choose between sorting by date or relevance.
 
 ### NewsStories.jsx
-Component for rendering the list of news stories.
+
+Renders the list of news stories based on the current page. Provides an option to show/hide comments for each story.
 
 ### Comments.jsx
-Component for displaying comments associated with a news story.
+
+Displays comments for each news story. Comments are fetched asynchronously to enhance performance.
 
 ### Subcomments.jsx
-Component for displaying nested subcomments
+
+Displays subcomments recursively for a given comment.
 
 ### Pagination.jsx
-Component for rendering pagination controls.
 
-### useDataApi.js
-Custom hook for managing API calls and state.
+Renders page navigation buttons based on the number of available pages.
 
 ## Development Tips
 - Debouncing Search: The app uses debouncing to avoid making too many API calls while the user is typing in the search bar.
@@ -41,8 +58,6 @@ Custom hook for managing API calls and state.
 
 ## Roadmap of future improvements
 
-- Include filters by date and by tags
-- Include sort by date or by relevance
 - Generate AI images associated with each news story
 
 ## License
