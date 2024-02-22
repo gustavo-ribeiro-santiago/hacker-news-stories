@@ -32,7 +32,7 @@ const Comments = ({ commentsId }) => {
 const fetchComments = async (commentsId) => {
   try {
     let commentsPromises = commentsId.map((commentId) =>
-      axios.get('http://hn.algolia.com/api/v1/items/' + commentId)
+      axios.get('https://hn.algolia.com/api/v1/items/' + commentId)
     );
     let commentsResponses = await Promise.all(commentsPromises);
     const comments = commentsResponses.map((res) => res.data);
