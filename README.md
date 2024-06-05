@@ -72,16 +72,3 @@ Email: gustavorsa@poli.ufrj.br
 GitHub: https://github.com/gustavo-ribeiro-santiago
 
 Feel free to reach out if you have any questions or feedback!
-
-Please review these additional resources to continue learning:
-
-- [Strapi Documentation](https://strapi.io/documentation/developer-docs/latest/getting-started/introduction.html)
-- [Strapi Discord Community](https://discord.com/invite/strapi)
-- [Strapi GitHub](https://github.com/strapi/strapi)
-- [Strapi Quickstart Guide](https://strapi.io/documentation/developer-docs/latest/getting-started/quick-start.html#_1-install-strapi-and-create-a-new-project)
-- [Postman Learning Center](https://learning.postman.com/)
-- [Explore Postman Public API Network](https://www.postman.com/explore)
-- [Postman Community](https://community.postman.com/)
-- [Express GitHub](https://github.com/expressjs/express)
-- [NodeJS Documentation](https://nodejs.org/en/docs/)
-- [Picsum Photos](https://picsum.photos/)
