@@ -16,14 +16,15 @@ function App() {
   const [showFilterBy, setShowFilterBy] = useState(false);
   const [showSortBy, setShowSortBy] = useState(false);
   const [sortBy, setSortBy] = useState('search_by_date');
-  const [filteredTags, setFilteredTags] = useState('');
+  const [filteredStoryType, setFilteredStoryType] = useState('All Stories');
   const [filteredDate, setFilteredDate] = useState('');
+  const [filteredTags, setFilteredTags] = useState('');
   const [isMobile, setIsMobile] = useState(true);
   const pageSize = 10;
 
   // useDataApi custom hook fetches data and manages states
   const [{ data, isLoading, isError }, doFetch] = useDataApi(
-    'https://hn.algolia.com/api/v1/search_by_date?tags=story&query=&hitsPerPage=50',
+    'https://hn.algolia.com/api/v1/search_by_date?tags=(story,show_hn,ask_hn)&query=&hitsPerPage=50',
     {
       hits: [],
     }
@@ -39,14 +40,17 @@ function App() {
   const debouncedFetch = debounce(doFetch, 1000);
 
   useEffect(() => {
+    let storyTypes = "(story,show_hn,ask_hn)"
+    if (filteredStoryType === 'Show HN') storyTypes = "(show_hn)";
+    if (filteredStoryType === 'Ask HN') storyTypes = "(ask_hn)";
     debouncedFetch(
-      `https://hn.algolia.com/api/v1/${sortBy}?tags=story&query=${
+      `https://hn.algolia.com/api/v1/${sortBy}?tags=${storyTypes}&query=${
         filteredTags + query
       }&hitsPerPage=50${filteredDate}`,
       data
     );
     setCurrentPage(1);
-  }, [sortBy, filteredDate, filteredTags, query]);
+  }, [sortBy, filteredStoryType, filteredDate, filteredTags, query]);
 
   useEffect(() => {
     // Information text depends on screen width
@@ -117,6 +121,8 @@ function App() {
           setFilteredDate={setFilteredDate}
           filteredTags={filteredTags}
           setFilteredTags={setFilteredTags}
+          filteredStoryType={filteredStoryType}
+          setFilteredStoryType={setFilteredStoryType}
           isMobile={isMobile}
         />
       )}

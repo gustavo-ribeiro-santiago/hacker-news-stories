@@ -21,6 +21,16 @@ body {
   background-color: rgba(0, 0, 0, 0.078);
 }
 
+.clickable-quote-icon {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  animation: 900ms ease-in-out 500ms 4 MoveUpDown;
+  background-color: transparent;
+}
+.clickable-quote-icon:hover {
+  background-color: rgba(0, 0, 0, 0.078);
+}
+
 .comments {
   max-height: 0;
   opacity: 0;
@@ -127,6 +137,11 @@ div .search:hover, div .search:focus {
   height: auto;
   border-radius: 8px;
 }
+
+div .btn.filter-by-story-type-radio:hover {
+  color: var(--bs-btn-hover-color);
+  background-color: var(--bs-btn-hover-bg);
+  border-color: var(--bs-btn-hover-border-color);}
 
 .filter-by-date-container {
   display: flex;
