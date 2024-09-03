@@ -79,7 +79,7 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",
-    "https://gustavo-ribeiro-santiago.github.io/hacker-news-stories/"
+    "https://gustavo-ribeiro-santiago.github.io"
 ]
 
 
