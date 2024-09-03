@@ -6,6 +6,7 @@ import FilterBySection from './components/FilterBySection.jsx';
 import NewsStories from './components/NewsStories.jsx';
 import Pagination from './components/Pagination.jsx';
 import useDataApi from './useDataApi.js';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 var timeoutIds = [];
@@ -20,6 +21,7 @@ function App() {
   const [filteredDate, setFilteredDate] = useState('');
   const [filteredTags, setFilteredTags] = useState('');
   const [isMobile, setIsMobile] = useState(true);
+  const [newsWithSummaries, setNewsWithSummaries] = useState([]);
   const pageSize = 10;
 
   // useDataApi custom hook fetches data and manages states
@@ -40,9 +42,9 @@ function App() {
   const debouncedFetch = debounce(doFetch, 1000);
 
   useEffect(() => {
-    let storyTypes = "(story,show_hn,ask_hn)"
-    if (filteredStoryType === 'Show HN') storyTypes = "(show_hn)";
-    if (filteredStoryType === 'Ask HN') storyTypes = "(ask_hn)";
+    let storyTypes = '(story,show_hn,ask_hn)';
+    if (filteredStoryType === 'Show HN') storyTypes = '(show_hn)';
+    if (filteredStoryType === 'Ask HN') storyTypes = '(ask_hn)';
     debouncedFetch(
       `https://hn.algolia.com/api/v1/${sortBy}?tags=${storyTypes}&query=${
         filteredTags + query
@@ -76,6 +78,29 @@ function App() {
   if (pageData.length >= 1) {
     pageData = paginate(pageData, currentPage, pageSize);
   }
+
+  const createAISummary = async (objID, link) => {
+    try {
+      let updatedNewswithSummaries = [
+        ...newsWithSummaries,
+        { objID, summary: 'Summarizing...' },
+      ]
+      setNewsWithSummaries([...updatedNewswithSummaries]);
+      const response = await axios.post(
+        'http://localhost:8001/api/summarize-link/',
+        { link }
+      );
+      console.log('Response:', response.data);
+      updatedNewswithSummaries = updatedNewswithSummaries.map((news) => {
+        if (news.objID === objID) return { objID, summary: response.data.summary };
+        return news;
+      });
+      console.log(updatedNewswithSummaries)
+      setNewsWithSummaries([...updatedNewswithSummaries]);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   return (
     <div className="app">
@@ -128,7 +153,15 @@ function App() {
       )}
       {showSortBy && <SortBySection sortBy={sortBy} setSortBy={setSortBy} />}
       {isError && <div>Error loading page.</div>}
-      {isLoading ? <div>Loading ...</div> : <NewsStories pageData={pageData} />}
+      {isLoading ? (
+        <div>Loading ...</div>
+      ) : (
+        <NewsStories
+          pageData={pageData}
+          createAISummary={createAISummary}
+          newsWithSummaries={newsWithSummaries}
+        />
+      )}
       <Pagination
         items={data.hits}
         pageSize={pageSize}

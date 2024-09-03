@@ -1,0 +1,8 @@
+Django>=4.0
+langchain
+langchain_openai
+requests
+tiktoken
+python-dotenv
+gunicorn==20.1.0
+django-cors-headers

@@ -34,9 +34,15 @@ const fetchComments = async (commentsId) => {
     let commentsPromises = commentsId.map((commentId) =>
       axios.get('https://hn.algolia.com/api/v1/items/' + commentId)
     );
-    let commentsResponses = await Promise.all(commentsPromises);
-    const comments = commentsResponses.map((res) => res.data);
+
+    let commentsResponses = await Promise.allSettled(commentsPromises);
+
+    const comments = commentsResponses
+      .filter((response) => response.status === 'fulfilled')
+      .map((response) => response.value.data);
+
     console.log('comments', comments);
+
     return comments;
   } catch (error) {
     return [

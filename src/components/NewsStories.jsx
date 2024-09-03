@@ -1,11 +1,14 @@
 import Comments from './Comments.jsx';
+import Button from 'react-bootstrap/Button';
+import ReactMarkdown from 'react-markdown';
 import { useState, useEffect } from 'react';
 
-const NewsStories = ({ pageData }) => {
+const NewsStories = ({ pageData, createAISummary, newsWithSummaries }) => {
   console.log(pageData);
   // Displays news stories from current page
   const [newsWithVisibleComments, setNewsWithVisibleComments] = useState([]);
   const [newsWithShowAuthorText, setNewsWithShowAuthorText] = useState([]);
+  const [newsWithShowSummary, setNewsWithShowSummary] = useState([]);
 
   useEffect(() => {
     setNewsWithVisibleComments([]);
@@ -31,6 +34,24 @@ const NewsStories = ({ pageData }) => {
     setNewsWithShowAuthorText(newsWithShowAuthorText.filter((id) => id !== i));
   };
 
+  let newsWithSummariesIDs = newsWithSummaries.map((news) => news.objID);
+
+  const handleCreateShowOrHideAISummary = (objectID, url) => {
+    if (!newsWithSummariesIDs.includes(objectID)) {
+      createAISummary(objectID, url);
+      setNewsWithShowSummary([...newsWithShowSummary, objectID]);
+      return;
+    }
+    if (!newsWithShowSummary.includes(objectID)) {
+      setNewsWithShowSummary([...newsWithShowSummary, objectID]);
+      return;
+    }
+    const updatednewsWithShowSummary = newsWithShowSummary.filter(
+      (id) => id !== objectID
+    );
+    setNewsWithShowSummary([...updatednewsWithShowSummary]);
+  };
+
   return (
     <ul className="list-group custom-styles">
       {pageData.map(
@@ -43,23 +64,56 @@ const NewsStories = ({ pageData }) => {
             num_comments,
             children,
             story_text,
+            author,
+            points,
           },
           i
         ) => (
-          <li key={objectID} className="list-group-item">
+          <li key={objectID} className="list-group-item custom-news-container">
             <a className="text-dark text-decoration-none news-title" href={url}>
               {title}
             </a>
             <br />
-            <div className="news-subtitle">
+            <div className="news-subtitle mt-1">
               <span className="posted"> Posted: </span>
               {created_at.substring(0, 16).replace('T', ' ')}
+              <span className="author"> Author: </span>
+              {author}
+              <span className="points"> Points: </span>
+              {points}
               {url && (
                 <>
                   <span className="url"> URL: </span>
                   <a className="text-dark" href={url}>
                     {url}
                   </a>
+                  <Button
+                    className="btn-sm custom-small-button"
+                    variant="outline-dark"
+                    onClick={() => {
+                      handleCreateShowOrHideAISummary(objectID, url);
+                    }}
+                  >
+                    <i className="bi bi-lightning-charge"></i>
+                    {newsWithShowSummary.includes(objectID)
+                      ? 'Hide AI Summary'
+                      : newsWithSummariesIDs.includes(objectID)
+                      ? 'Show AI Summary'
+                      : 'Create AI Summary'}
+                  </Button>
+                  {newsWithShowSummary.includes(objectID) ? (
+                    <div className="border border-black-subtle rounded-3 p-2 m-2">
+                      <i className="bi bi-lightning-charge"></i>
+                      AI Summary:
+                      <div className="mt-2">
+                      <ReactMarkdown>{
+                          newsWithSummaries[
+                            newsWithSummariesIDs.indexOf(objectID)
+                          ].summary
+                        }</ReactMarkdown>
+                      </div>
+                    </div>
+                  ) : null}
                 </>
               )}
               {story_text && (
@@ -71,14 +125,16 @@ const NewsStories = ({ pageData }) => {
                   >
                     <i className="bi bi-blockquote-left"></i>
                   </button>
-                  {newsWithShowAuthorText.includes(i) ?
-                  <div
-                    className={`comments ${
-                      newsWithShowAuthorText.includes(i) ? 'visible' : ''
-                    }`}
-                    dangerouslySetInnerHTML={{ __html: story_text }}
-                  ></div>
-                  : ''}
+                  {newsWithShowAuthorText.includes(i) ? (
+                    <div
+                      className={`comments ${
+                        newsWithShowAuthorText.includes(i) ? 'visible' : ''
+                      }`}
+                      dangerouslySetInnerHTML={{ __html: story_text }}
+                    ></div>
+                  ) : (
+                    ''
+                  )}
                 </>
               )}
               {num_comments > 0 && (

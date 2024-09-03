@@ -6,7 +6,7 @@ body {
   padding-left: 5%;
   padding-right: 5%;
   margin-top: 0px;
-  background-color:rgba(40, 120, 191, 0.238);
+  background-color: rgba(40, 120, 191, 0.238);
 }
 
 #form-search::placeholder {
@@ -39,12 +39,14 @@ body {
 }
 
 .comments.visible {
-  max-height: 6000px;
+  max-height: 720px;
   opacity: 1;
+  overflow: scroll;
 }
 
 @keyframes MoveUpDown {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -71,7 +73,7 @@ header {
 .menu-controls button {
   min-width: 48px;
   color: white;
-  background-color: #0D6EFD;
+  background-color: #0d6efd;
   border: none;
   padding: 6px;
   border-radius: 15%;
@@ -84,7 +86,7 @@ header {
 
 .menu-controls div {
   color: white;
-  background-color: #0D6EFD;
+  background-color: #0d6efd;
   border: none;
   padding: 4px;
   border-radius: 10px;
@@ -96,7 +98,8 @@ div .search {
   flex-grow: 100;
 }
 
-div .search:hover, div .search:focus {
+div .search:hover,
+div .search:focus {
   transform: scale(1.003);
 }
 
@@ -114,7 +117,7 @@ div .search:hover, div .search:focus {
   border-radius: 0px;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
-  border-bottom: 15px solid #0D6EFD;
+  border-bottom: 15px solid #0d6efd;
 }
 
 .arrow-up-sortby {
@@ -126,11 +129,11 @@ div .search:hover, div .search:focus {
   border-radius: 0px;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
-  border-bottom: 15px solid #0D6EFD;
+  border-bottom: 15px solid #0d6efd;
 }
 
 .filters-container {
-  background-color: #0D6EFD;
+  background-color: #0d6efd;
   color: white;
   padding: 4px 8px 8px;
   width: 100%;
@@ -141,7 +144,8 @@ div .search:hover, div .search:focus {
 div .btn.filter-by-story-type-radio:hover {
   color: var(--bs-btn-hover-color);
   background-color: var(--bs-btn-hover-bg);
-  border-color: var(--bs-btn-hover-border-color);}
+  border-color: var(--bs-btn-hover-border-color);
+}
 
 .filter-by-date-container {
   display: flex;
@@ -185,12 +189,16 @@ div .filter-tags {
 }
 
 .sortby-container {
-  background-color: #0D6EFD;
+  background-color: #0d6efd;
   color: white;
   padding: 0px 10% 0px 10%;
   width: 100%;
   height: 80px;
   border-radius: 12px;
+}
+
+li.custom-news-container {
+  padding-bottom: 0.3rem;
 }
 
 .news-title {
@@ -209,9 +217,24 @@ div .custom-styles {
 }
 
 .posted,
-.url {
+.url,
+.author,
+.points {
   font-style: italic;
   font-weight: bold;
+}
+
+.url,
+.author,
+.points {
+  margin-left: 0.2rem;
+}
+
+.custom-small-button.btn-sm {
+  margin-left: 8px;
+  margin-bottom: 0.2rem;
+  padding: 0.1rem 0.25rem;
+  font-size: 0.75rem;
 }
 
 .page-legend {
@@ -247,5 +270,4 @@ footer {
   .sortby-container {
     padding: 20px;
   }
-
 }
