@@ -87,7 +87,8 @@ function App() {
       ]
       setNewsWithSummaries([...updatedNewswithSummaries]);
       const response = await axios.post(
-        'http://localhost:8001/api/summarize-link/',
+        // 'http://localhost:8001/api/summarize-link/',
+        'https://hacker-news-ai-backend.xyz/api/summarize-link/',
         { link }
       );
       console.log('Response:', response.data);
