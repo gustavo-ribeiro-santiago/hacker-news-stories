@@ -83,17 +83,20 @@ function App() {
     try {
       let updatedNewswithSummaries = [
         ...newsWithSummaries,
-        { objID, summary: 'Summarizing...' },
+        { objID, summary: 'Summarizing...', elapsedTime:'' },
       ]
       setNewsWithSummaries([...updatedNewswithSummaries]);
+      const startTime = Date.now();
       const response = await axios.post(
         // 'http://localhost:8001/api/summarize-link/',
         'https://hacker-news-ai-backend.xyz/api/summarize-link/',
         { link }
       );
+      const endTime = Date.now();
+      const elapsedTime = endTime - startTime;  // Time in milliseconds
       console.log('Response:', response.data);
       updatedNewswithSummaries = updatedNewswithSummaries.map((news) => {
-        if (news.objID === objID) return { objID, summary: response.data.summary };
+        if (news.objID === objID) return { objID, summary: response.data.summary, elapsedTime };
         return news;
       });
       console.log(updatedNewswithSummaries)

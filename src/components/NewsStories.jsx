@@ -104,13 +104,23 @@ const NewsStories = ({ pageData, createAISummary, newsWithSummaries }) => {
                   {newsWithShowSummary.includes(objectID) ? (
                     <div className="border border-black-subtle rounded-3 p-2 m-2">
                       <i className="bi bi-lightning-charge"></i>
-                      AI Summary:
+                      {(() => {
+                        const newsIndex =
+                          newsWithSummariesIDs.indexOf(objectID);
+                        const elapsedTime =
+                          newsWithSummaries[newsIndex]?.elapsedTime;
+                        return elapsedTime
+                          ? `AI Summary (done in ${(elapsedTime / 1000).toFixed(1)}s): `
+                          : 'AI Summary:';
+                      })()}
                       <div className="mt-2">
-                      <ReactMarkdown>{
-                          newsWithSummaries[
-                            newsWithSummariesIDs.indexOf(objectID)
-                          ].summary
-                        }</ReactMarkdown>
+                        <ReactMarkdown>
+                          {
+                            newsWithSummaries[
+                              newsWithSummariesIDs.indexOf(objectID)
+                            ].summary
+                          }
+                        </ReactMarkdown>
                       </div>
                     </div>
                   ) : null}
