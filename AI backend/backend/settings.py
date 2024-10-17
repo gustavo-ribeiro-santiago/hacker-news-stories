@@ -16,6 +16,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import firebase_admin
+from firebase_admin import credentials
+
+# Firebase Admin SDK initialization
+cred = credentials.Certificate("hacker-news-stories-15c1a-firebase-adminsdk-vf2ae-c006861185.json")
+firebase_admin.initialize_app(cred)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -88,9 +95,13 @@ CORS_ALLOW_CREDENTIALS = True
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv("MYSQL_DATABASE"),
+        'USER': os.getenv("MYSQL_USER"),
+        'PASSWORD': os.getenv("MYSQL_PASSWORD"),
+        'HOST': 'localhost',  # Set to 'localhost' if running locally
+        'PORT': '3306',        # MySQL default port
     }
 }
 

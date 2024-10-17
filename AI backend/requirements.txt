@@ -6,3 +6,6 @@ tiktoken
 python-dotenv
 gunicorn==20.1.0
 django-cors-headers
+mysql-connector-python==9.0.0
+firebase-admin==6.5.0
+mysqlclient==2.2.4

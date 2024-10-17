@@ -2,9 +2,18 @@ import Comments from './Comments.jsx';
 import Button from 'react-bootstrap/Button';
 import ReactMarkdown from 'react-markdown';
 import { useState, useEffect } from 'react';
+import { fetchWithAuth } from '.././auth';
 
-const NewsStories = ({ pageData, createAISummary, newsWithSummaries }) => {
-  console.log(pageData);
+const NewsStories = ({
+  pageData,
+  createAISummary,
+  newsWithSummaries,
+  loggedIn,
+  toastUser,
+  bookmarkedArticlesIDs,
+  handleUpdateBookmarks,
+  showBookmarkedArticles,
+}) => {
   // Displays news stories from current page
   const [newsWithVisibleComments, setNewsWithVisibleComments] = useState([]);
   const [newsWithShowAuthorText, setNewsWithShowAuthorText] = useState([]);
@@ -52,12 +61,63 @@ const NewsStories = ({ pageData, createAISummary, newsWithSummaries }) => {
     setNewsWithShowSummary([...updatednewsWithShowSummary]);
   };
 
+  const handleAddOrDeleteBookmark = (id, title, url) => {
+    if (loggedIn === false) {
+      toastUser('danger', 'You need to sign in before bookmarking an article.');
+    } else {
+      if (bookmarkedArticlesIDs.includes(Number(id))) {
+        // Delete bookmark
+        fetchWithAuth(
+          'https://hacker-news-ai-backend.xyz/api/delete_saved_article/',
+          {
+            article_hn_id: id,
+          },
+          'DELETE'
+        )
+          .then((response) => {
+            toastUser(
+              'success',
+              `The bookmark to article "${title}" was successfully deleted.`
+            );
+            handleUpdateBookmarks();
+          })
+          .catch((err) =>
+            toastUser(
+              'danger',
+              `Following error occured while trying to delete the bookmark: ${err}`
+            )
+          );
+      } else {
+        // Add bookmark
+        fetchWithAuth('https://hacker-news-ai-backend.xyz/api/add_article/', {
+          article_hn_id: id,
+          article_name: title,
+          article_link: url,
+        })
+          .then((response) => {
+            toastUser(
+              'success',
+              `The article "${title}" was successfully bookmarked.`
+            );
+            handleUpdateBookmarks();
+          })
+          .catch((err) =>
+            toastUser(
+              'danger',
+              `Following error occured while trying to bookmark the article: ${err}`
+            )
+          );
+      }
+    }
+  };
+
   return (
     <ul className="list-group custom-styles">
       {pageData.map(
         (
           {
             objectID,
+            id, // if fetched through the id of the article, returns the property id instead of objectID
             title,
             url,
             created_at,
@@ -91,33 +151,36 @@ const NewsStories = ({ pageData, createAISummary, newsWithSummaries }) => {
                     className="btn-sm custom-small-button"
                     variant="outline-dark"
                     onClick={() => {
-                      handleCreateShowOrHideAISummary(objectID, url);
+                      handleCreateShowOrHideAISummary(objectID || id, url);
                     }}
                   >
                     <i className="bi bi-lightning-charge"></i>
-                    {newsWithShowSummary.includes(objectID)
+                    {newsWithShowSummary.includes(objectID || id)
                       ? 'Hide AI Summary'
-                      : newsWithSummariesIDs.includes(objectID)
+                      : newsWithSummariesIDs.includes(objectID || id)
                       ? 'Show AI Summary'
                       : 'Create AI Summary'}
                   </Button>
-                  {newsWithShowSummary.includes(objectID) ? (
+                  {newsWithShowSummary.includes(objectID || id) ? (
                     <div className="border border-black-subtle rounded-3 p-2 m-2">
                       <i className="bi bi-lightning-charge"></i>
                       {(() => {
-                        const newsIndex =
-                          newsWithSummariesIDs.indexOf(objectID);
+                        const newsIndex = newsWithSummariesIDs.indexOf(
+                          objectID || id
+                        );
                         const elapsedTime =
                           newsWithSummaries[newsIndex]?.elapsedTime;
                         return elapsedTime
-                          ? `AI Summary (done in ${(elapsedTime / 1000).toFixed(1)}s): `
+                          ? `AI Summary (done in ${(elapsedTime / 1000).toFixed(
+                              1
+                            )}s): `
                           : 'AI Summary:';
                       })()}
                       <div className="mt-2">
                         <ReactMarkdown>
                           {
                             newsWithSummaries[
-                              newsWithSummariesIDs.indexOf(objectID)
+                              newsWithSummariesIDs.indexOf(objectID || id)
                             ].summary
                           }
                         </ReactMarkdown>
@@ -126,6 +189,25 @@ const NewsStories = ({ pageData, createAISummary, newsWithSummaries }) => {
                   ) : null}
                 </>
               )}
+              <button
+                className="border-0 ms-2 clickable-bookmark-icon"
+                onClick={() => {
+                  handleAddOrDeleteBookmark(objectID || String(id), title, url);
+                }}
+                title={
+                  bookmarkedArticlesIDs.includes(id || Number(objectID))
+                    ? 'Delete bookmark'
+                    : 'Bookmark article'
+                }
+              >
+                <i
+                  className={`bi bi-bookmark${
+                    bookmarkedArticlesIDs.includes(id || Number(objectID))
+                      ? '-fill'
+                      : ''
+                  }`}
+                ></i>
+              </button>
               {story_text && (
                 <>
                   <button
@@ -147,26 +229,36 @@ const NewsStories = ({ pageData, createAISummary, newsWithSummaries }) => {
                   )}
                 </>
               )}
-              {num_comments > 0 && (
-                <>
-                  <button
-                    className="border-0 ms-2 clickable-chat-icon"
-                    onClick={() => handleShowComments(i)}
-                    title="Click to show/hide comments"
-                  >
-                    <i className="bi bi-chat-left me-1"></i>
-                    {num_comments}
-                  </button>
-                  <ul
-                    className={`comments ${
-                      newsWithVisibleComments.includes(i) ? 'visible' : ''
-                    }`}
-                    id={i}
-                  >
-                    <Comments commentsId={children} />
-                  </ul>
-                </>
-              )}
+              {(() => {
+                if (showBookmarkedArticles) {
+                  num_comments = children.length;
+                }
+                return (
+                  num_comments > 0 && (
+                    <div className="inline-display">
+                      <button
+                        className="border-0 ms-2 clickable-chat-icon"
+                        onClick={() => handleShowComments(i)}
+                        title="Click to show/hide comments"
+                      >
+                        <i className="bi bi-chat-left me-1"></i>
+                        {num_comments}
+                      </button>
+                      <ul
+                        className={`comments ${
+                          newsWithVisibleComments.includes(i) ? 'visible' : ''
+                        }`}
+                        id={i}
+                      >
+                        <Comments
+                          commentsData={children}
+                          showBookmarkedArticles={showBookmarkedArticles}
+                        />
+                      </ul>
+                    </div>
+                  )
+                );
+              })()}
             </div>
           </li>
         )

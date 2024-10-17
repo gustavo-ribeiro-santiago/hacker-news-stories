@@ -2,15 +2,19 @@ import Subcomments from './Subcomments.jsx';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
-const Comments = ({ commentsId }) => {
+const Comments = ({ commentsData, showBookmarkedArticles }) => {
   // Fetching each comment fetches all its children subcomments with, including subcomments' subcomments and so on
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
+    let commentsId = commentsData
+    if (showBookmarkedArticles) {
+      commentsId = commentsData.map(({id}) => id)
+    }
     fetchComments(commentsId).then((response) => {
       setComments(response);
     });
-  }, [commentsId]);
+  }, [commentsData]);
 
   if (!Array.isArray(comments)) return;
   return (
