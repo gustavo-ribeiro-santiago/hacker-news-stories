@@ -40,7 +40,7 @@ def get_saved_articles(request):
 
         # Connect to MySQL database
         connection = mysql.connector.connect(
-            host="localhost",
+            host=os.getenv("MYSQL_HOST"),
             user=os.getenv("MYSQL_USER"),
             password=os.getenv("MYSQL_PASSWORD"),
             database=os.getenv("MYSQL_DATABASE"),
@@ -72,42 +72,50 @@ def get_saved_articles(request):
 
 def add_article(request):
     if request.method == "POST":
-        # Get the Firebase ID token from the request headers
-        id_token = request.headers.get("Authorization")
 
-        # Verify the Firebase token
-        user_id = verify_firebase_token(id_token)
-        if not user_id:
-            return JsonResponse({"error": "Unauthorized"}, status=401)
+        try:
 
-        # Get article details from the request body
-        data = json.loads(request.body)
-        article_link = data.get("article_link")
-        article_name = data.get("article_name")
-        article_hn_id = data.get("article_hn_id")
+            # Get the Firebase ID token from the request headers
+            id_token = request.headers.get("Authorization")
 
-        # Connect to MySQL database
-        connection = mysql.connector.connect(
-            host="localhost",
-            user=os.getenv("MYSQL_USER"),
-            password=os.getenv("MYSQL_PASSWORD"),
-            database=os.getenv("MYSQL_DATABASE"),
-        )
-        cursor = connection.cursor()
-        print(article_link, article_name, article_hn_id, user_id)
+            # Verify the Firebase token
+            user_id = verify_firebase_token(id_token)
+            if not user_id:
+                return JsonResponse({"error": "Unauthorized"}, status=401)
 
-        # Query to insert the new article
-        cursor.execute(
-            "INSERT INTO saved_articles (article_link, article_name, article_hn_id, user_id) VALUES (%s, %s, %s, %s)",
-            (article_link, article_name, article_hn_id, user_id),
-        )
+            # Get article details from the request body
+            data = json.loads(request.body)
+            article_link = data.get("article_link")
+            article_name = data.get("article_name")
+            article_hn_id = data.get("article_hn_id")
 
-        connection.commit()
+            # Connect to MySQL database
+            connection = mysql.connector.connect(
+                host=os.getenv("MYSQL_HOST"),
+                user=os.getenv("MYSQL_USER"),
+                password=os.getenv("MYSQL_PASSWORD"),
+                database=os.getenv("MYSQL_DATABASE"),
+            )
+            cursor = connection.cursor()
+            print(article_link, article_name, article_hn_id, user_id)
 
-        # Close the connection
-        connection.close()
+            # Query to insert the new article
+            cursor.execute(
+                "INSERT INTO saved_articles (article_link, article_name, article_hn_id, user_id) VALUES (%s, %s, %s, %s)",
+                (article_link, article_name, article_hn_id, user_id),
+            )
 
-        return JsonResponse({"success": "Article added successfully"}, status=201)
+            connection.commit()
+
+            # Close the connection
+            connection.close()
+
+            return JsonResponse({"success": "Article added successfully"}, status=201)
+        
+        except Exception as e:
+            print(f"Error occured: {e}")
+            return None
+
     else:
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
@@ -128,7 +136,7 @@ def delete_saved_article(request):
 
         # Connect to MySQL database
         connection = mysql.connector.connect(
-            host="localhost",
+            host=os.getenv("MYSQL_HOST"),
             user=os.getenv("MYSQL_USER"),
             password=os.getenv("MYSQL_PASSWORD"),
             database=os.getenv("MYSQL_DATABASE"),

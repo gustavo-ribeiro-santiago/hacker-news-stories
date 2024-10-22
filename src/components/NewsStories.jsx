@@ -21,7 +21,7 @@ const NewsStories = ({
 
   useEffect(() => {
     setNewsWithVisibleComments([]);
-  }, [pageData]);
+  }, [showBookmarkedArticles]);
 
   const handleShowComments = (i) => {
     // Show or hide comments
@@ -77,7 +77,7 @@ const NewsStories = ({
           .then((response) => {
             toastUser(
               'success',
-              `The bookmark to article "${title}" was successfully deleted.`
+              `The bookmark for the article "${title}" was successfully deleted.`
             );
             handleUpdateBookmarks();
           })
@@ -97,7 +97,7 @@ const NewsStories = ({
           .then((response) => {
             toastUser(
               'success',
-              `The article "${title}" was successfully bookmarked.`
+              `The article "${title}" has been bookmarked successfully.`
             );
             handleUpdateBookmarks();
           })
@@ -238,7 +238,7 @@ const NewsStories = ({
                     <div className="inline-display">
                       <button
                         className="border-0 ms-2 clickable-chat-icon"
-                        onClick={() => handleShowComments(i)}
+                        onClick={() => handleShowComments(id || Number(objectID))}
                         title="Click to show/hide comments"
                       >
                         <i className="bi bi-chat-left me-1"></i>
@@ -246,7 +246,7 @@ const NewsStories = ({
                       </button>
                       <ul
                         className={`comments ${
-                          newsWithVisibleComments.includes(i) ? 'visible' : ''
+                          newsWithVisibleComments.includes(id || Number(objectID)) ? 'visible' : ''
                         }`}
                         id={i}
                       >

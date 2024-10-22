@@ -144,7 +144,7 @@ function App() {
   const handleViewBookmarks = () => {
     fetchWithAuth('https://hacker-news-ai-backend.xyz/api/get_saved_articles/')
       .then((response) => {
-        fetchBookmarkedArticlesData(response)
+        fetchBookmarkedArticlesData(response.reverse())
           .then((response) => {
             setBookmarkedArticles(response);
             setShowBookmarkedArticles(true);
@@ -179,7 +179,7 @@ function App() {
       return [
         {
           author: '',
-          text: 'Failed to load comment(s)',
+          text: 'Failed to load bookmark(s)',
           children: [],
         },
       ];
@@ -223,7 +223,7 @@ function App() {
         setBookmarkedArticlesIDs(
           response.map(({ article_hn_id }) => Number(article_hn_id))
         );
-        fetchBookmarkedArticlesData(response)
+        fetchBookmarkedArticlesData(response.reverse())
           .then((response) => {
             setBookmarkedArticles(response);
             const csvData = jsonToCSV(response);
