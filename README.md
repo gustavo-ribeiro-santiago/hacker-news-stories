@@ -1,9 +1,11 @@
 # Hacker News React App
-This React application provides a user-friendly interface for exploring the Hacker News stories. Users can filter by date and by tags, sort by different criteria, search for keywords and navigate through paginated results. The app also allows the users to view nested comments associated with each story.
+This React application provides a user-friendly interface for exploring the Hacker News stories. Users can create AI summaries for articles, bookmark articles for later reading, filter by date and by tags, sort by different criteria, search for keywords and navigate through paginated results.
 
 ![Project Screenshot](hacker%20news%20stories%20printshot.png)
 
 ## Features
+- AI Article Summaries: Generate AI-powered summaries of the articles using a Django backend that leverages Langchain and the GPT-4 algorithm.
+- Bookmarks: Save articles to your bookmarks list, stored in a MySQL database, and managed through the Django backend.
 - Search Functionality: Use the search bar to find stories related to specific keywords.
 - Sorting: Users can sort the news stories based on either date or relevance.
 - Filtering: The application supports filtering by date range and tags.
@@ -21,6 +23,11 @@ Access web app [here](https://gustavo-ribeiro-santiago.github.io/hacker-news-sto
 - Material-UI (for date pickers)
 - Axios (for API requests)
 - Day.js (for handling dates)
+- Django (Backend for AI summaries and bookmarks)
+- Langchain & GPT-4 (For AI summaries)
+- MySQL (For storing bookmarks)
+- Docker (To containerize the backend on EC2)
+- Firebase (For user authentication with Google accounts)
 
 ## Components
 ### App.js
@@ -37,7 +44,7 @@ Handles the sorting options, allowing users to choose between sorting by date or
 
 ### NewsStories.jsx
 
-Renders the list of news stories based on the current page. Provides an option to show/hide comments for each story.
+Renders the list of news stories based on the current page. Provides options to show/hide comments, create/hide AI summaries or bookmark each story.
 
 ### Comments.jsx
 
