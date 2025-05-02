@@ -13,6 +13,7 @@ import { auth } from './firebaseConfig';
 import { onAuthStateChanged, getAdditionalUserInfo } from 'firebase/auth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { signInWithGoogle, logOut, fetchWithAuth } from './auth';
+// import Comments from './components/Comments.jsx';
 
 var timeoutIds = [];
 
@@ -73,6 +74,7 @@ function App() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastVariant, setToastVariant] = useState('');
+  const [selectedArticleForComments, setSelectedArticleForComments] = useState(null);
   const pageSize = 10;
 
   
@@ -91,7 +93,7 @@ function App() {
 
   // useDataApi custom hook fetches data and manages states
   const [{ data, isLoading, isError }, doFetch] = useDataApi(
-    'https://hn.algolia.com/api/v1/search?tags=(story,show_hn,ask_hn)&query=&hitsPerPage=50',
+    `https://hn.algolia.com/api/v1/search?tags=(story,show_hn,ask_hn)&query=&hitsPerPage=50${getTodayNumericFilter()}`,
     {
       hits: [],
     }
@@ -400,8 +402,12 @@ function App() {
           bookmarkedArticlesIDs={bookmarkedArticlesIDs}
           handleUpdateBookmarks={handleUpdateBookmarks}
           showBookmarkedArticles={showBookmarkedArticles}
+          onViewComments={setSelectedArticleForComments}
         />
       )}
+      {/* {selectedArticleForComments && (
+        <Comments commentsData={selectedArticleForComments.children.map(child => ({ id: child.id }))} />
+      )} */}
       <Pagination
         items={showBookmarkedArticles ? bookmarkedArticles : data.hits}
         pageSize={pageSize}

@@ -13,11 +13,13 @@ const NewsStories = ({
   bookmarkedArticlesIDs,
   handleUpdateBookmarks,
   showBookmarkedArticles,
+  onViewComments,
 }) => {
   // Displays news stories from current page
   const [newsWithVisibleComments, setNewsWithVisibleComments] = useState([]);
   const [newsWithShowAuthorText, setNewsWithShowAuthorText] = useState([]);
   const [newsWithShowSummary, setNewsWithShowSummary] = useState([]);
+  const [selectedCommentsArticle, setSelectedCommentsArticle] = useState(null);
 
   useEffect(() => {
     setNewsWithVisibleComments([]);
@@ -35,7 +37,7 @@ const NewsStories = ({
   };
 
   const handleShowAuthorText = (i) => {
-    // Show or hide comments
+    // Show or hide author text
     if (!newsWithShowAuthorText.includes(i)) {
       setNewsWithShowAuthorText([...newsWithShowAuthorText, i]);
       return;
@@ -238,23 +240,23 @@ const NewsStories = ({
                     <div className="inline-display">
                       <button
                         className="border-0 ms-2 clickable-chat-icon"
-                        onClick={() => handleShowComments(id || Number(objectID))}
+                        onClick={() =>
+                          setSelectedCommentsArticle(
+                            selectedCommentsArticle === (id || Number(objectID))
+                              ? null
+                              : id || Number(objectID)
+                          )
+                        }
                         title="Click to show/hide comments"
                       >
                         <i className="bi bi-chat-left me-1"></i>
                         {num_comments}
                       </button>
-                      <ul
-                        className={`comments ${
-                          newsWithVisibleComments.includes(id || Number(objectID)) ? 'visible' : ''
-                        }`}
-                        id={i}
-                      >
-                        <Comments
-                          commentsData={children}
-                          showBookmarkedArticles={showBookmarkedArticles}
-                        />
-                      </ul>
+                      {selectedCommentsArticle === (id || Number(objectID)) && (
+                        <ul className="comments visible" id={i}>
+                          <Comments commentsData={children} />
+                        </ul>
+                      )}
                     </div>
                   )
                 );
