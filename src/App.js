@@ -16,14 +16,51 @@ import { signInWithGoogle, logOut, fetchWithAuth } from './auth';
 
 var timeoutIds = [];
 
+function getTodayNumericFilter() {
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const startTimestamp = Math.floor(startOfDay.getTime() / 1000);
+  const endTimestamp = Math.floor(endOfDay.getTime() / 1000);
+  return `&numericFilters=created_at_i>${startTimestamp},created_at_i<${endTimestamp}`;
+}
+
+function getYesterdayNumericFilter() {
+  const now = new Date();
+  const startOfYesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+  const endOfYesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startTimestamp = Math.floor(startOfYesterday.getTime() / 1000);
+  const endTimestamp = Math.floor(endOfYesterday.getTime() / 1000);
+  return `&numericFilters=created_at_i>${startTimestamp},created_at_i<${endTimestamp}`;
+}
+
+function getLastWeekNumericFilter() {
+  const now = new Date();
+  const startOfLastWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+  const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const startTimestamp = Math.floor(startOfLastWeek.getTime() / 1000);
+  const endTimestamp = Math.floor(endOfToday.getTime() / 1000);
+  return `&numericFilters=created_at_i>${startTimestamp},created_at_i<${endTimestamp}`;
+}
+
+function getLastMonthNumericFilter() {
+  const now = new Date();
+  const startOfLastMonth = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
+  const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const startTimestamp = Math.floor(startOfLastMonth.getTime() / 1000);
+  const endTimestamp = Math.floor(endOfToday.getTime() / 1000);
+  return `&numericFilters=created_at_i>${startTimestamp},created_at_i<${endTimestamp}`;
+}
+
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [query, setQuery] = useState('');
   const [showFilterBy, setShowFilterBy] = useState(false);
   const [showSortBy, setShowSortBy] = useState(false);
-  const [sortBy, setSortBy] = useState('search_by_date');
+  // const [sortBy, setSortBy] = useState('search_by_date');
+  const [sortBy, setSortBy] = useState('search');
   const [filteredStoryType, setFilteredStoryType] = useState('All Stories');
-  const [filteredDate, setFilteredDate] = useState('');
+  const [filteredDate, setFilteredDate] = useState(getTodayNumericFilter());
   const [filteredTags, setFilteredTags] = useState('');
   const [isMobile, setIsMobile] = useState(true);
   const [newsWithSummaries, setNewsWithSummaries] = useState([]);
@@ -38,9 +75,23 @@ function App() {
   const [toastVariant, setToastVariant] = useState('');
   const pageSize = 10;
 
+  
+  const handleYesterday = () => {
+    setFilteredDate(getYesterdayNumericFilter());
+    setShowOffcanvas(false);
+  };
+  const handleLastWeek = () => {
+    setFilteredDate(getLastWeekNumericFilter());
+    setShowOffcanvas(false);
+  };
+  const handleLastMonth = () => {
+    setFilteredDate(getLastMonthNumericFilter());
+    setShowOffcanvas(false);
+  };
+
   // useDataApi custom hook fetches data and manages states
   const [{ data, isLoading, isError }, doFetch] = useDataApi(
-    'https://hn.algolia.com/api/v1/search_by_date?tags=(story,show_hn,ask_hn)&query=&hitsPerPage=50',
+    'https://hn.algolia.com/api/v1/search?tags=(story,show_hn,ask_hn)&query=&hitsPerPage=50',
     {
       hits: [],
     }
@@ -305,7 +356,7 @@ function App() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-        {loggedIn ? (
+        {/* {loggedIn ? (
           <button onClick={() => setShowOffcanvas(true)}>
             <i className="bi bi-person"></i> {isMobile ? '' : 'Account'}
           </button>
@@ -314,7 +365,10 @@ function App() {
             <i className="bi bi-google"></i>{' '}
             {isMobile ? '' : 'Sign with Google'}
           </button>
-        )}
+        )} */}
+        <button onClick={() => setShowOffcanvas(true)}>
+          <i className="bi bi-list"></i> {isMobile ? '' : 'Menu'}
+        </button>
       </section>
       {showFilterBy && (
         <FilterBySection
@@ -376,6 +430,11 @@ function App() {
         handleViewBookmarks={handleViewBookmarks}
         handleExportToCSV={handleExportToCSV}
         handleLogout={handleLogout}
+        loggedIn={loggedIn}
+        handleGoogleSignIn={handleGoogleSignIn}
+        handleYesterday={handleYesterday}
+        handleLastWeek={handleLastWeek}
+        handleLastMonth={handleLastMonth}
       />
     </div>
   );
