@@ -12,7 +12,8 @@ import axios from 'axios';
 import { auth } from './firebaseConfig';
 import { onAuthStateChanged, getAdditionalUserInfo } from 'firebase/auth';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { signInWithGoogle, logOut, fetchWithAuth } from './auth';
+import { signInWithGoogle, logOut } from './auth';
+import { getSavedArticles, addArticle, deleteSavedArticle, summarizeArticle } from './firebaseFunctions';
 // import Comments from './components/Comments.jsx';
 
 var timeoutIds = [];
@@ -154,16 +155,12 @@ function App() {
       ];
       setNewsWithSummaries([...updatedNewswithSummaries]);
       const startTime = Date.now();
-      const response = await axios.post(
-        // 'http://localhost:8001/api/summarize-link/',
-        'https://hacker-news-ai-backend.xyz/api/summarize-link/',
-        { link }
-      );
+      const response = await summarizeArticle(link);
       const endTime = Date.now();
       const elapsedTime = endTime - startTime; // Time in milliseconds
       updatedNewswithSummaries = updatedNewswithSummaries.map((news) => {
         if (news.objID === objID)
-          return { objID, summary: response.data.summary, elapsedTime };
+          return { objID, summary: response.summary, elapsedTime };
         return news;
       });
       setNewsWithSummaries([...updatedNewswithSummaries]);
@@ -195,7 +192,7 @@ function App() {
   };
 
   const handleViewBookmarks = () => {
-    fetchWithAuth('https://hacker-news-ai-backend.xyz/api/get_saved_articles/')
+    getSavedArticles()
       .then((response) => {
         fetchBookmarkedArticlesData(response.reverse())
           .then((response) => {
@@ -258,7 +255,7 @@ function App() {
     if (showBookmarkedArticles) {
       handleViewBookmarks(); // update all bookmarks data
     } else {
-      fetchWithAuth('https://hacker-news-ai-backend.xyz/api/get_saved_articles/')
+      getSavedArticles()
         .then((response) => {
           setBookmarkedArticlesIDs(
             response.map(({ article_hn_id }) => Number(article_hn_id))
@@ -271,7 +268,7 @@ function App() {
   };
 
   const handleExportToCSV = () => {
-    fetchWithAuth('https://hacker-news-ai-backend.xyz/api/get_saved_articles/')
+    getSavedArticles()
       .then((response) => {
         setBookmarkedArticlesIDs(
           response.map(({ article_hn_id }) => Number(article_hn_id))

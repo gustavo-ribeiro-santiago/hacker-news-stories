@@ -1,0 +1,33 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "saved_articles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "user_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "saved_articles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "article_hn_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "user_id",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
