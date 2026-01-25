@@ -223,7 +223,7 @@ function App() {
       const articles = articlesResponses
         .filter((response) => response.status === 'fulfilled')
         .map((response) => response.value.data)
-        .sort((a, b) => b.created_at - a.created_at); // Sort by posted date (newest first)
+        .sort((a, b) => b.created_at_i - a.created_at_i); // Sort by posted date (newest first)
 
       return articles;
     } catch (error) {
