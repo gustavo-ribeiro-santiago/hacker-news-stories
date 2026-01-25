@@ -2,7 +2,7 @@ import Comments from './Comments.jsx';
 import Button from 'react-bootstrap/Button';
 import ReactMarkdown from 'react-markdown';
 import { useState, useEffect } from 'react';
-import { fetchWithAuth } from '.././auth';
+import { addArticle, deleteSavedArticle } from '../firebaseFunctions';
 
 const NewsStories = ({
   pageData,
@@ -63,52 +63,38 @@ const NewsStories = ({
     setNewsWithShowSummary([...updatednewsWithShowSummary]);
   };
 
-  const handleAddOrDeleteBookmark = (id, title, url) => {
+  const handleAddOrDeleteBookmark = async (id, title, url) => {
     if (loggedIn === false) {
       toastUser('danger', 'You need to sign in before bookmarking an article.');
     } else {
-      if (bookmarkedArticlesIDs.includes(Number(id))) {
-        // Delete bookmark
-        fetchWithAuth(
-          'https://hacker-news-ai-backend.xyz/api/delete_saved_article/',
-          {
-            article_hn_id: id,
-          },
-          'DELETE'
-        )
-          .then((response) => {
-            toastUser(
-              'success',
-              `The bookmark for the article "${title}" was successfully deleted.`
-            );
-            handleUpdateBookmarks();
-          })
-          .catch((err) =>
-            toastUser(
-              'danger',
-              `Following error occured while trying to delete the bookmark: ${err}`
-            )
+      try {
+        if (bookmarkedArticlesIDs.includes(Number(id))) {
+          // Delete bookmark
+          await deleteSavedArticle(id);
+          toastUser(
+            'success',
+            `The bookmark for the article "${title}" was successfully deleted.`
           );
-      } else {
-        // Add bookmark
-        fetchWithAuth('https://hacker-news-ai-backend.xyz/api/add_article/', {
-          article_hn_id: id,
-          article_name: title,
-          article_link: url,
-        })
-          .then((response) => {
-            toastUser(
-              'success',
-              `The article "${title}" has been bookmarked successfully.`
-            );
-            handleUpdateBookmarks();
-          })
-          .catch((err) =>
-            toastUser(
-              'danger',
-              `Following error occured while trying to bookmark the article: ${err}`
-            )
+          handleUpdateBookmarks();
+        } else {
+          // Add bookmark
+          await addArticle({
+            objectID: id,
+            id: id,
+            title: title,
+            url: url,
+          });
+          toastUser(
+            'success',
+            `The article "${title}" has been bookmarked successfully.`
           );
+          handleUpdateBookmarks();
+        }
+      } catch (err) {
+        toastUser(
+          'danger',
+          `Following error occurred: ${err.message || err}`
+        );
       }
     }
   };
