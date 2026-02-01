@@ -130,6 +130,156 @@ app.delete('/delete_saved_article', verifyFirebaseToken, async (req, res) => {
   }
 });
 
+// ==================== ALEXA GPT SKILL ENDPOINTS ====================
+
+// Submit a new question from Alexa skill
+app.post('/alexa/ask', async (req, res) => {
+  try {
+    const { user_id, question } = req.body;
+    
+    if (!user_id || !question) {
+      return res.status(400).json({ error: 'Missing user_id or question' });
+    }
+    
+    // Create new question document with "Still thinking" placeholder
+    const docRef = await db.collection('alexa_questions').add({
+      user_id,
+      question,
+      answer: 'Still thinking',
+      status: 'processing',
+      created_at: admin.firestore.FieldValue.serverTimestamp(),
+      updated_at: admin.firestore.FieldValue.serverTimestamp()
+    });
+    
+    // Return immediately to avoid Alexa timeout
+    res.status(201).json({ 
+      success: true,
+      message: 'Question received. Ask for the answer later.',
+      question_id: docRef.id
+    });
+    
+    // Process the question asynchronously (after response sent)
+    processAlexaQuestion(docRef.id, question).catch(err => {
+      console.error('Error processing Alexa question:', err);
+    });
+    
+  } catch (error) {
+    console.error('Error submitting Alexa question:', error);
+    return res.status(500).json({ error: 'Failed to submit question' });
+  }
+});
+
+// Background function to process the question with OpenAI
+async function processAlexaQuestion(questionId, question) {
+  try {
+    const openai = getOpenAIClient();
+    
+    const aiResponse = await openai.responses.create({
+      model: "gpt-5-mini",
+      input: "Responda em poucas frases para caber na resposta de uma Alexa Skill: " + question,
+      tools: [{ type: "web_search" }]
+    });
+    
+    const answer = aiResponse.output_text;
+    
+    // Update the document with the actual answer
+    await db.collection('alexa_questions').doc(questionId).update({
+      answer,
+      status: 'completed',
+      updated_at: admin.firestore.FieldValue.serverTimestamp()
+    });
+    
+    console.log(`Question ${questionId} processed successfully`);
+  } catch (error) {
+    console.error(`Error processing question ${questionId}:`, error);
+    
+    // Update with error message
+    await db.collection('alexa_questions').doc(questionId).update({
+      answer: 'Desculpe, houve um erro ao processar sua pergunta.',
+      status: 'error',
+      updated_at: admin.firestore.FieldValue.serverTimestamp()
+    });
+  }
+}
+
+// Get the last answer for a user from Alexa skill
+app.post('/alexa/last-answer', async (req, res) => {
+  try {
+    const { user_id } = req.body;
+    
+    if (!user_id) {
+      return res.status(400).json({ error: 'Missing user_id' });
+    }
+    
+    // Get the most recent question for this user
+    const snapshot = await db
+      .collection('alexa_questions')
+      .where('user_id', '==', user_id)
+      .orderBy('created_at', 'desc')
+      .limit(1)
+      .get();
+    
+    if (snapshot.empty) {
+      return res.status(200).json({ 
+        found: false,
+        message: 'Você ainda não fez nenhuma pergunta.'
+      });
+    }
+    
+    const doc = snapshot.docs[0];
+    const data = doc.data();
+    
+    return res.status(200).json({
+      found: true,
+      question: data.question,
+      answer: data.answer,
+      status: data.status
+    });
+    
+  } catch (error) {
+    console.error('Error fetching last answer:', error);
+    return res.status(500).json({ error: 'Failed to fetch last answer' });
+  }
+});
+
+// Get all questions history for a user (optional - for checking later)
+app.post('/alexa/history', async (req, res) => {
+  try {
+    const { user_id, limit: queryLimit } = req.body;
+    
+    if (!user_id) {
+      return res.status(400).json({ error: 'Missing user_id' });
+    }
+    
+    const snapshot = await db
+      .collection('alexa_questions')
+      .where('user_id', '==', user_id)
+      .orderBy('created_at', 'desc')
+      .limit(queryLimit || 20)
+      .get();
+    
+    const questions = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      questions.push({
+        id: doc.id,
+        question: data.question,
+        answer: data.answer,
+        status: data.status,
+        created_at: data.created_at
+      });
+    });
+    
+    return res.status(200).json({ questions });
+    
+  } catch (error) {
+    console.error('Error fetching history:', error);
+    return res.status(500).json({ error: 'Failed to fetch history' });
+  }
+});
+
+// ==================== END ALEXA GPT SKILL ENDPOINTS ====================
+
 // Summarize article using OpenAI
 app.post('/summarize-link', async (req, res) => {
   try {
