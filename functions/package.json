@@ -4,7 +4,7 @@
   "description": "Firebase functions backend for Hacker News Stories",
   "main": "index.js",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "scripts": {
     "serve": "firebase emulators:start --only functions",

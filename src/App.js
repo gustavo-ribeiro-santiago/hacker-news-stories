@@ -166,6 +166,11 @@ function App() {
       setNewsWithSummaries([...updatedNewswithSummaries]);
     } catch (error) {
       console.error('Error:', error);
+      const updatedNewswithSummaries = newsWithSummaries
+        .filter((news) => news.objID !== objID)
+        .concat({ objID, summary: 'Failed to generate summary.', elapsedTime: '' });
+      setNewsWithSummaries(updatedNewswithSummaries);
+      toastUser('danger', 'Could not summarize this article — the site may be blocking automated requests.');
     }
   };
 

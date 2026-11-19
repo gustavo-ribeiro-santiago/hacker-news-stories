@@ -307,8 +307,16 @@ app.post('/summarize-link', async (req, res) => {
     // Get OpenRouter client (this will throw an error if API key is not configured)
     const openai = getOpenRouterClient();
 
-    // Fetch content from the link
-    const response = await axios.get(link);
+    // Fetch content from the link. A browser-like User-Agent is required by several
+    // news sites (e.g. Wikipedia explicitly rejects the default axios UA; others
+    // use bot-detection that's less likely to block a real browser UA), and a
+    // timeout avoids hanging the request indefinitely on an unresponsive site.
+    const response = await axios.get(link, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+      },
+      timeout: 15000,
+    });
     const content = response.data;
 
     // Simplified token counting approach
