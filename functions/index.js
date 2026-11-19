@@ -10,16 +10,31 @@ const { onRequest } = require('firebase-functions/v2/https');
 admin.initializeApp();
 const db = admin.firestore();
 
-// Function to get OpenAI client
+// Function to get OpenAI client (used by endpoints that need OpenAI-specific
+// features, e.g. the Responses API's built-in web_search tool)
 const getOpenAIClient = () => {
   const apiKey = process.env.OPENAI_API_KEY || functions.config()?.openai?.api_key;
-  
+
   if (!apiKey) {
     throw new Error('OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.');
   }
-  
+
   return new OpenAI({
     apiKey: apiKey,
+  });
+};
+
+// Function to get an OpenRouter client (OpenAI-compatible Chat Completions API)
+const getOpenRouterClient = () => {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('OpenRouter API key not configured. Please set OPENROUTER_API_KEY environment variable.');
+  }
+
+  return new OpenAI({
+    apiKey: apiKey,
+    baseURL: 'https://openrouter.ai/api/v1',
   });
 };
 
@@ -289,25 +304,25 @@ app.post('/summarize-link', async (req, res) => {
       return res.status(400).json({ error: 'Link not provided' });
     }
     
-    // Get OpenAI client (this will throw an error if API key is not configured)
-    const openai = getOpenAIClient();
-    
+    // Get OpenRouter client (this will throw an error if API key is not configured)
+    const openai = getOpenRouterClient();
+
     // Fetch content from the link
     const response = await axios.get(link);
     const content = response.data;
-    
+
     // Simplified token counting approach
     // Just ensure we don't exceed model limits
     const maxContentLength = 60000;
     let processedContent = content;
-    
+
     if (content.length > maxContentLength) {
       processedContent = content.substring(0, maxContentLength);
     }
-    
-    // Use OpenAI to summarize the content
+
+    // Use DeepSeek V4 Flash (via OpenRouter) to summarize the content
     const aiResponse = await openai.chat.completions.create({
-      model: "gpt-4o-mini",  // Or another appropriate model
+      model: "deepseek/deepseek-v4-flash-0731",
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: `Summarize the following content: ${processedContent}` }
